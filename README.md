@@ -20,15 +20,18 @@ HTTP egress proxy with IP, Domain, and User-Agent filters
     * User-Agent is not a required header, and definitely not in proxy negotiation
 
 ### TODO and Notes
-* The current implemetation of the custom HttpClient route planner opens a socket
-  to test reachability from each interface for every connection to deal with
-  the split routing (Some traffic bound for the Inetnet routes there directly
+* The current implemetation of the Custom Route Planner:
+ 1. Opens a socket to test reachability from each interface for every connection.
+  * This is to deal with the split routing (Some traffic bound for the Inetnet routes there directly
   and some traverses aditional servers and then the Internet.) The additional
   servers provide services which access resources within a private network and
   thus, although the ultimate destination is the Internet, it is meaningless
   without first traversing the internal servers.  The routing/reachability tests
   could result in timeouts or blocking delays. Figure out a way to resolve the
   interface and its IP without creating a new connection. (For instance caching)
+  2. The Default route planner does not  have an option to tunnel through a proxy even through HttpClient supports it.  Add that option.
+* The CustomCloseableHttpClient:
+ 1. Just a CloseableHttpClient with some presets such as using the Custom Route Planner.
 * Some remote web servers close the socket after a fixed period of time or number
   of requests to prevent resouce leaks, despite keep-alive values.  What is
   the most gracefull way to deal with this? HttpClient tries to reuse a
